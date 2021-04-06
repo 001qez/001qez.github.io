@@ -9,29 +9,25 @@
    crossorigin=""></script>
 </head>
 <body>
-  <p>Step 1: Plot the Point of Interest</p>
+  <p>Step 1: Plot the POI</p>
   latitude: <input type="number" id="mylat" value="1.3">
   longitude: <input type="number" id="mylong" value="103.9">
   <button onclick="plotmypoint()">Plot point of interest</button>
   <hr>
-  <p>Step2a: Plot Rain stations</p>
+  <p>Step2a: Plot RS</p>
   <div id='cbdiv'></div>
   </br>
-  <div>Step2b: <button id="btn">Plot Selected Rain Stations</button></div>
-  <div>Step2c: Save the zoomed-in image <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
-  <div>Step 2d: <button onclick="drawboxblue()">draw blue view box</button></div>
+  <div>Step2b: <button id="btn">Plot Selected RS</button></div>
+  <div>Step 2d: <button onclick="drawboxblue()">draw view box</button></div>
   <div>Step 2e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
-  <div>Step 2f: Save the zoomed-out image <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
   <div>Reload html to clear the map.</div>
   <hr>
-  <p>Step 3a: Plot Wind stations</p>
+  <p>Step 3a: Plot WS</p>
   <div id='wcbdiv'></div>
   </br>
-  <div>Step 3b: <button id="wbtn">Plot Selected Wind Stations</button></div>
-  <div>Step 3c: <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
-  <div>Step 3d: <button onclick="drawboxred()">draw red view box</button></div>
+  <div>Step 3b: <button id="wbtn">Plot Selected WS</button></div>
+  <div>Step 3d: <button onclick="drawboxred()">draw view box</button></div>
   <div>Step 3e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
-  <div>Step 3f: <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
   <div>Reload html to clear the map.</div>
   <hr>
   <div id='mapdiv' style='height:500px;width:750px'></div>
