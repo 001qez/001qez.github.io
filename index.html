@@ -1,0 +1,363 @@
+<html>
+<head>
+  <title>OneMap2 XYZ (Default)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+</head>
+<body>
+  <p>Step 1: Plot the Point of Interest</p>
+  latitude: <input type="number" id="mylat" value="1.3">
+  longitude: <input type="number" id="mylong" value="103.9">
+  <button onclick="plotmypoint()">Plot point of interest</button>
+  <hr>
+  <p>Step2a: Plot Rain stations</p>
+  <div id='cbdiv'></div>
+  </br>
+  <div>Step2b: <button id="btn">Plot Selected Rain Stations</button></div>
+  <div>Step2c: Save the zoomed-in image <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
+  <div>Step 2d: <button onclick="drawboxblue()">draw blue view box</button></div>
+  <div>Step 2e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
+  <div>Step 2f: Save the zoomed-out image <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
+  <div>Reload html to clear the map.</div>
+  <hr>
+  <p>Step 3a: Plot Wind stations</p>
+  <div id='wcbdiv'></div>
+  </br>
+  <div>Step 3b: <button id="wbtn">Plot Selected Wind Stations</button></div>
+  <div>Step 3c: <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
+  <div>Step 3d: <button onclick="drawboxred()">draw red view box</button></div>
+  <div>Step 3e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
+  <div>Step 3f: <button class="manualButton" onclick="manualPrint()">Save Image</button></div>
+  <div>Reload html to clear the map.</div>
+  <hr>
+  <div id='mapdiv' style='height:500px;width:750px'></div>
+</body>
+<script src="./bundle.js"></script>
+<script>
+  function plotmypoint() {
+    var marker = L.marker([document.getElementById("mylat").value, document.getElementById("mylong").value], {
+	  icon: greenIcon
+	}).bindTooltip(document.getElementById("mylat").value.toString().concat('Â°N, ', document.getElementById("mylong").value.toString(), 'Â°E'), {
+      permanent: true, 
+      direction: 'right'
+    }).addTo(map);
+  }
+  
+  var stations = {
+    S01: [1.2666, 103.816667], 
+    S02: [1.3, 103.88333], 
+    S03: [1.4, 104.4], 
+    S04: [1.38333, 103.73333], 
+    S05: [1.3083, 103.8183], 
+    S06: [1.3524, 103.9007], 
+    S07: [1.3415, 103.8334], 
+    S08: [1.3701, 103.8271], 
+    S09: [1.4, 103.81], 
+    S100: [1.4172, 103.74855], 
+    S101: [1.35053, 103.7134], 
+    S102: [1.189, 103.768], 
+    S103: [1.364, 103.777], 
+    S104: [1.443867, 103.78538], 
+    S105: [1.45817, 103.79525], 
+    S106: [1.4168, 103.9673], 
+    S107: [1.3135, 103.9625], 
+    S108: [1.2799, 103.8703], 
+    S109: [1.3764, 103.8492], 
+    S11: [1.3746, 103.6938], 
+    S110: [1.360606, 103.8697], 
+    S111: [1.31055, 103.8365], 
+    S112: [1.43854, 103.70131], 
+    S113: [1.305, 103.911], 
+    S114: [1.38, 103.73], 
+    S115: [1.293767, 103.618428], 
+    S116: [1.281, 103.754], 
+    S117: [1.253846, 103.6740437], 
+    S118: [1.2994, 103.8461], 
+    S119: [1.30105, 103.8666], 
+    S12: [1.331667, 103.95], 
+    S120: [1.308739, 103.818], 
+    S121: [1.37288, 103.722444], 
+    S122: [1.417313, 103.8249], 
+    S123: [1.3214, 103.8577], 
+    S13: [1.2833, 103.85], 
+    S15: [1.35, 103.883333], 
+    S19: [1.271667, 103.8], 
+    S199: [1.36777, 103.98227], 
+    S20: [1.34833, 103.78833], 
+    S201: [1.32319, 103.767136], 
+    S202: [1.309676, 103.757795], 
+    S203: [1.291645, 103.770203], 
+    S204: [1.400812, 103.882169], 
+    S205: [1.388287, 103.911598], 
+    S206: [1.346032, 103.960997], 
+    S207: [1.324731, 103.958122], 
+    S208: [1.31363, 104.003165], 
+    S209: [1.421111, 103.844722], 
+    S210: [1.440034, 103.769036], 
+    S211: [1.429175, 103.757113], 
+    S212: [1.318346, 103.935738], 
+    S213: [1.324273, 103.809703], 
+    S214: [1.299106, 103.882892], 
+    S215: [1.319444, 103.881944], 
+    S216: [1.360194, 103.853344], 
+    S217: [1.350278, 103.855], 
+    S218: [1.364907, 103.750648], 
+    S219: [1.379983, 103.876392], 
+    S22: [1.15833, 103.74333], 
+    S220: [1.386665, 103.89797], 
+    S222: [1.289872, 103.823637], 
+    S223: [1.299843, 103.802646], 
+    S224: [1.343944, 103.983863], 
+    S225: [1.376257, 103.976639], 
+    S227: [1.439444, 103.803889], 
+    S228: [1.347033, 103.700726], 
+    S229: [1.351667, 103.721944], 
+    S23: [1.3858, 103.7114], 
+    S24: [1.3678, 103.9826], 
+    S24B: [1.3678, 103.998], 
+    S25: [1.4166, 103.8654], 
+    S27: [1.315, 103.855], 
+    S29: [1.387, 103.935], 
+    S30: [1.31, 103.846667], 
+    S31: [1.272, 103.83], 
+    S32: [1.23333, 103.65], 
+    S33: [1.3081, 103.71], 
+    S34: [1.366667, 103.9], 
+    S35: [1.3329, 103.7556], 
+    S36: [1.3382, 103.8657], 
+    S38: [1.316667, 103.655], 
+    S39: [1.3262, 103.7354], 
+    S40: [1.4068, 103.7823], 
+    S41: [1.415, 103.83], 
+    S42: [1.34, 103.795], 
+    S43: [1.3399, 103.8878], 
+    S44: [1.3454, 103.6834], 
+    S46: [1.3416, 103.8106], 
+    S47: [1.3925, 103.8605], 
+    S49: [1.36667, 103.783333], 
+    S50: [1.3337, 103.7768], 
+    S51: [1.4244, 103.7611], 
+    S52: [1.376667, 103.905], 
+    S54: [1.445, 103.8233], 
+    S55: [1.3837, 103.886], 
+    S56: [1.4196, 103.6965], 
+    S57: [1.33833, 103.66333], 
+    S58: [1.29, 103.776667], 
+    S59: [1.4106, 104.04], 
+    S60: [1.25, 103.8279], 
+    S61: [1.323, 103.9217], 
+    S62: [1.441667, 103.783333], 
+    S63: [1.3275, 103.7042], 
+    S64: [1.3824, 103.7603], 
+    S66: [1.4387, 103.7363], 
+    S69: [1.37, 103.805], 
+    S71: [1.2923, 103.7815], 
+    S72: [1.274, 103.8482], 
+    S74: [1.345, 103.725], 
+    S75: [1.373333, 103.655], 
+    S76: [1.462, 103.7936], 
+    S77: [1.2937, 103.8125], 
+    S78: [1.30703, 103.89067], 
+    S79: [1.3004, 103.8372], 
+    S80: [1.4252, 103.8202], 
+    S81: [1.4029, 103.9092], 
+    S82: [1.3247, 103.6351], 
+    S83: [1.376667, 103.741667], 
+    S84: [1.3437, 103.9444], 
+    S85: [1.341, 103.983], 
+    S86: [1.3302, 103.7205], 
+    S88: [1.3427, 103.8482], 
+    S89: [1.31985, 103.66162], 
+    S90: [1.3191, 103.8191], 
+    S900: [1.335, 103.995], 
+    S91: [1.4301, 103.8308], 
+    S92: [1.2841, 103.7886], 
+    S93: [1.3711, 103.8643], 
+    S94: [1.3662, 103.9528], 
+    S96: [1.3175, 104.0307], 
+    S97: [1.293894, 103.664069]
+  }; 
+  var wstations = {
+    S06: [1.3524, 103.9007], 
+    S100: [1.4172, 103.74855], 
+    S104: [1.443867, 103.78538], 
+    S106: [1.4168, 103.9673], 
+    S107: [1.3135, 103.9625], 
+    S108: [1.2799, 103.8703], 
+    S109: [1.3764, 103.8492], 
+    S111: [1.31055, 103.8365], 
+    S115: [1.293767, 103.618428], 
+    S116: [1.281, 103.754], 
+    S117: [1.253846, 103.6740437], 
+    S121: [1.37288, 103.722444], 
+    S122: [1.417313, 103.8249], 
+    S23: [1.3858, 103.7114], 
+    S24: [1.3678, 103.9826], 
+    S43: [1.3399, 103.8878], 
+    S44: [1.3454, 103.6834], 
+    S50: [1.3337, 103.7768], 
+    S60: [1.25, 103.8279]
+  }; 
+  
+  var center = L.bounds([1.49, 104.10], [1.14, 103.6]).getCenter();
+  var map = L.map('mapdiv', {
+    center: [center.x, center.y],
+	zoom: 11,
+	zoomControl: false,
+	zoomSnap: 0,
+	zoomDelta: 0.1
+  });
+  var basemap = L.tileLayer('https://maps-{s}.onemap.sg/v3/Grey/{z}/{x}/{y}.png', {
+  <!-- var basemap = L.tileLayer('https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', { -->
+    detectRetina: true,
+    maxZoom: 18,
+    minZoom: 10,
+	//Do not remove this attribution
+    attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:14px;width:14px;"/> OneMap | Map data &copy; contributors, SLA</a>'
+	<!-- attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' -->
+  });
+  <!-- map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]); -->
+  basemap.addTo(map);
+  
+  var redIcon = new L.Icon({
+    iconUrl: 'marker-icon-2x-red.png',
+    shadowUrl: 'marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+  var greenIcon = new L.Icon({
+    iconUrl: 'marker-icon-2x-green.png',
+    shadowUrl: 'marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+  var blueIcon = new L.Icon({
+    iconUrl: 'marker-icon-2x-blue.png',
+    shadowUrl: 'marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  var cbdiv = document.getElementById("cbdiv");
+  for (const station in stations) {
+	// creating checkbox element
+    var checkbox = document.createElement('input'); 
+    // Assigning the attributes 
+    // to created checkbox 
+    checkbox.type = "checkbox"; 
+    checkbox.name = "station"; 
+    checkbox.value = station; 
+    checkbox.id = "id"; 
+    // creating label for checkbox 
+    var label = document.createElement('label'); 
+    // assigning attributes for  
+    // the created label tag  
+    label.htmlFor = "id"; 
+    // appending the created text to  
+    // the created label tag  
+    label.appendChild(document.createTextNode(station)); 
+    // appending the checkbox 
+    // and label to div 
+    cbdiv.appendChild(checkbox);
+    cbdiv.appendChild(label);
+	}
+  var wcbdiv = document.getElementById("wcbdiv");
+  for (const station in wstations) {
+	// creating checkbox element
+    var checkbox = document.createElement('input'); 
+    // Assigning the attributes 
+    // to created checkbox 
+    checkbox.type = "checkbox"; 
+    checkbox.name = "wstation"; 
+    checkbox.value = station; 
+    checkbox.id = "id"; 
+    // creating label for checkbox 
+    var label = document.createElement('label'); 
+    // assigning attributes for  
+    // the created label tag  
+    label.htmlFor = "id"; 
+    // appending the created text to  
+    // the created label tag  
+    label.appendChild(document.createTextNode(station)); 
+    // appending the checkbox 
+    // and label to div 
+    wcbdiv.appendChild(checkbox);
+    wcbdiv.appendChild(label);
+	}
+
+  function getSelectedCheckboxValues(name) {
+    const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+    let values = [];
+    checkboxes.forEach((checkbox) => {
+        values.push(checkbox.value);
+    });
+    return values;
+  }
+  
+  const btn = document.querySelector('#btn');
+  btn.addEventListener('click', (event) => {
+    var values = getSelectedCheckboxValues('station');
+	let points = [];
+    var i; for (i = 0; i < values.length; i++) {
+	var marker = L.marker(stations[values[i]], {
+	  icon: blueIcon
+	}).bindTooltip(values[i], {
+      permanent: true, 
+      direction: 'right'
+    }).addTo(map);
+	points.push(stations[values[i]]);
+	};
+	points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
+	map.fitBounds(L.latLngBounds(points).pad(0.28));
+  });
+  const wbtn = document.querySelector('#wbtn');
+  wbtn.addEventListener('click', (event) => {
+    var values = getSelectedCheckboxValues('wstation');
+	let points = [];
+    var i; for (i = 0; i < values.length; i++) {
+	var marker = L.marker(stations[values[i]], {
+	  icon: redIcon
+	}).bindTooltip(values[i], {
+      permanent: true, 
+      direction: 'right'
+    }).addTo(map);
+	points.push(stations[values[i]]);
+	};
+	points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
+	map.fitBounds(L.latLngBounds(points).pad(0.28));
+  });
+  
+  function drawboxred() {
+  L.rectangle(map.getBounds(), {color: "black", weight: 2, fillOpacity: 0}).addTo(map);
+  }
+  function drawboxblue() {
+  L.rectangle(map.getBounds(), {color: "black", weight: 2, fillOpacity: 0}).addTo(map);
+  }
+  
+  function resetview() {
+  map.setView([center.x, center.y], 11);
+  map.getPane('tooltipPane').remove();
+  map.createPane('tooltipPane');
+  }
+  
+  function manualPrint() {
+  var myprintPlugin = L.easyPrint({
+	hidden: true,
+	exportOnly: true,
+	sizeModes: ['CurrentSize']
+  }).addTo(map); 
+  myprintPlugin.printMap('CurrentSize', 'MyFileName');
+  }
+
+</script>
+</html>
