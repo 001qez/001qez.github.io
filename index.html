@@ -37,7 +37,7 @@
   function plotmypoint() {
     var marker = L.marker([document.getElementById("mylat").value, document.getElementById("mylong").value], {
 	  icon: greenIcon
-	}).bindTooltip(document.getElementById("mylat").value.toString().concat('Â°N, ', document.getElementById("mylong").value.toString(), 'Â°E'), {
+	}).bindTooltip(document.getElementById("mylat").value.toString().concat('°N, ', document.getElementById("mylong").value.toString(), '°E'), {
       permanent: true, 
       direction: 'right'
     }).addTo(map);
