@@ -15,6 +15,7 @@
   <button onclick="plotmypoint()">Plot point of interest</button>
   <hr>
   <p>Step2a: Plot RS</p>
+  <input type="text" id="inputRSId">
   <div id='cbdiv'></div>
   </br>
   <div>Step2b: <button id="btn">Plot Selected RS</button></div>
@@ -23,6 +24,7 @@
   <div>Reload html to clear the map.</div>
   <hr>
   <p>Step 3a: Plot WS</p>
+  <input type="text" id="inputWSId">
   <div id='wcbdiv'></div>
   </br>
   <div>Step 3b: <button id="wbtn">Plot Selected WS</button></div>
@@ -291,18 +293,20 @@
     wcbdiv.appendChild(label);
 	}
 
-  function getSelectedCheckboxValues(name) {
+  function getSelectedCheckboxValues(name, inputId) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
     let values = [];
     checkboxes.forEach((checkbox) => {
         values.push(checkbox.value);
     });
-    return values;
+    let inputVal = document.getElementById(inputId).value;
+    const myArr = inputVal.trim().split(" ").slice(1);
+    return values.concat(myArr);
   }
   
   const btn = document.querySelector('#btn');
   btn.addEventListener('click', (event) => {
-    var values = getSelectedCheckboxValues('station');
+    var values = getSelectedCheckboxValues('station', 'inputRSId');
 	let points = [];
     var i; for (i = 0; i < values.length; i++) {
 	var marker = L.marker(stations[values[i]], {
@@ -318,7 +322,7 @@
   });
   const wbtn = document.querySelector('#wbtn');
   wbtn.addEventListener('click', (event) => {
-    var values = getSelectedCheckboxValues('wstation');
+    var values = getSelectedCheckboxValues('wstation', 'inputWSId');
 	let points = [];
     var i; for (i = 0; i < values.length; i++) {
 	var marker = L.marker(stations[values[i]], {
