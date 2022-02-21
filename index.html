@@ -41,9 +41,10 @@
   </br>
   <div>Step 3b: <button id="wbtn">Plot Selected WS</button></div>
   <hr>
-  <div>Step 4a: <button class="button button1" onclick="drawboxred()">draw view box</button></div>
-  <div>Step 4b: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button class="button button2" onclick="resetview()">reset view</button></div>
+  <div>Step 4: <button class="button button1" onclick="drawboxred()">draw view box</button><button class="button button2" onclick="resetview()">reset view</button></div>
+  <div>Zoom out. Press keyboard '+' or '-' for finer zoom control.</div>
   <div>Reload html to clear the map.</div>
+  <div>Step 5: <button class="button button1" onclick="manualPrint()">Print</button></div>
   <hr>
   <div id='mapdiv' style='height:500px;width:750px'></div>
 </body>
@@ -233,6 +234,9 @@
   });
   <!-- map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]); -->
   basemap.addTo(map);
+  var myprintPlugin = L.easyPrint({
+    hidden: true
+  }).addTo(map);
   
   var redIcon = new L.Icon({
     iconUrl: 'marker-icon-2x-red.png',
@@ -379,11 +383,6 @@
   }
   
   function manualPrint() {
-  var myprintPlugin = L.easyPrint({
-	hidden: true,
-	exportOnly: true,
-	sizeModes: ['CurrentSize']
-  }).addTo(map); 
   myprintPlugin.printMap('CurrentSize', 'MyFileName');
   }
 
