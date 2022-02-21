@@ -8,6 +8,21 @@
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
 </head>
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.button1 {background-color: #4CAF50;} /* Green */
+.button2 {background-color: #008CBA;} /* Blue */
+</style>
 <body>
   <p>Step 1: Plot the POI</p>
   latitude: <input type="number" id="mylat">
@@ -19,17 +34,15 @@
   <div id='cbdiv'></div>
   </br>
   <div>Step2b: <button id="btn">Plot Selected RS</button></div>
-  <div>Step 2d: <button onclick="drawboxblue()">draw view box</button></div>
-  <div>Step 2e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
-  <div>Reload html to clear the map.</div>
   <hr>
   <p>Step 3a: Plot WS</p>
   <input type="text" id="inputWSId">
   <div id='wcbdiv'></div>
   </br>
   <div>Step 3b: <button id="wbtn">Plot Selected WS</button></div>
-  <div>Step 3d: <button onclick="drawboxred()">draw view box</button></div>
-  <div>Step 3e: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button onclick="resetview()">reset view</button></div>
+  <hr>
+  <div>Step 4a: <button class="button button1" onclick="drawboxred()">draw view box</button></div>
+  <div>Step 4b: Zoom out. Press keyboard '+' or '-' for finer zoom control.<button class="button button2" onclick="resetview()">reset view</button></div>
   <div>Reload html to clear the map.</div>
   <hr>
   <div id='mapdiv' style='height:500px;width:750px'></div>
