@@ -235,7 +235,12 @@
     });
     //map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]);
     basemap.addTo(map);
-    var myprintPlugin = L.easyPrint({hidden: true}).addTo(map);
+
+    var myprintPlugin = L.easyPrint({
+      tileLayer: basemap,
+      exportOnly: true,
+    }).addTo(map);
+
     var redIcon = new L.Icon({
       iconUrl: 'marker-icon-2x-red.png',
       shadowUrl: 'marker-shadow.png',
