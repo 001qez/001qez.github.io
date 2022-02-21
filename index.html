@@ -300,41 +300,56 @@
         values.push(checkbox.value);
     });
     let inputVal = document.getElementById(inputId).value;
-    const myArr = inputVal.trim().split(" ").slice(1);
+    const myArr = inputVal.trim().split(" ").slice(3);
     return values.concat(myArr);
   }
   
   const btn = document.querySelector('#btn');
   btn.addEventListener('click', (event) => {
     var values = getSelectedCheckboxValues('station', 'inputRSId');
-	let points = [];
+    let points = [];
     var i; for (i = 0; i < values.length; i++) {
-	var marker = L.marker(stations[values[i]], {
-	  icon: blueIcon
-	}).bindTooltip(values[i], {
+      var marker = L.marker(stations[values[i]], {
+        icon: blueIcon
+      }).bindTooltip(values[i], {
+        permanent: true, 
+        direction: 'right'
+      }).addTo(map);
+      points.push(stations[values[i]]);
+    };
+    var marker = L.marker([parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[1])], {
+      icon: greenIcon
+    }).bindTooltip(document.getElementById('inputRSId').value.trim().split(" ")[0].concat('°N, ', document.getElementById('inputRSId').value.trim().split(" ")[1], '°E'), {
       permanent: true, 
       direction: 'right'
     }).addTo(map);
-	points.push(stations[values[i]]);
-	};
-	points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
-	map.fitBounds(L.latLngBounds(points).pad(0.28));
+    points.push([parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[1])]);
+    <!-- points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]); -->
+    map.fitBounds(L.latLngBounds(points).pad(0.28));
   });
+  
   const wbtn = document.querySelector('#wbtn');
   wbtn.addEventListener('click', (event) => {
     var values = getSelectedCheckboxValues('wstation', 'inputWSId');
-	let points = [];
+    let points = [];
     var i; for (i = 0; i < values.length; i++) {
-	var marker = L.marker(stations[values[i]], {
-	  icon: redIcon
-	}).bindTooltip(values[i], {
+      var marker = L.marker(stations[values[i]], {
+        icon: redIcon
+      }).bindTooltip(values[i], {
+        permanent: true, 
+        direction: 'right'
+      }).addTo(map);
+      points.push(stations[values[i]]);
+    };
+    var marker = L.marker([parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[1])], {
+      icon: greenIcon
+    }).bindTooltip(document.getElementById('inputWSId').value.trim().split(" ")[0].concat('°N, ', document.getElementById('inputWSId').value.trim().split(" ")[1], '°E'), {
       permanent: true, 
       direction: 'right'
     }).addTo(map);
-	points.push(stations[values[i]]);
-	};
-	points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
-	map.fitBounds(L.latLngBounds(points).pad(0.28));
+    points.push([parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[1])]);
+    <!-- points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
+    map.fitBounds(L.latLngBounds(points).pad(0.28));
   });
   
   function drawboxred() {
