@@ -238,10 +238,7 @@
 
     var myprintPlugin = L.easyPrint({
       tileLayer: basemap,
-      sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
-      filename: 'myMap',
-      exportOnly: true,
-      hideControlContainer: true
+      hidden: true
     }).addTo(map);
 
     var redIcon = new L.Icon({
