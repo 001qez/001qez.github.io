@@ -3,65 +3,22 @@
     <title>OneMap2 XYZ (Default)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-    <style>
-      .button {
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-      }
-
-      .button1 {
-        background-color: #4CAF50;
-      }
-
-      /* Green */
-      .button2 {
-        background-color: #008CBA;
-      }
-
-      /* Blue */
-    </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   </head>
   <body>
     <script src="dist/bundle.js"></script>
-    <p>Step 1: Plot the POI</p> latitude: <input type="number" id="mylat"> longitude: <input type="number" id="mylong">
-    <button onclick="plotmypoint()">Plot point of interest</button>
-    <hr>
-    <p>Step2a: Plot RS</p>
-    <input type="text" id="inputRSId">
-    <div id='cbdiv'></div>
-    <br>
-    <div>Step2b: <button id="btn">Plot Selected RS</button>
-    </div>
-    <hr>
-    <p>Step 3a: Plot WS</p>
-    <input type="text" id="inputWSId">
-    <div id='wcbdiv'></div>
-    <br>
-    <div>Step 3b: <button id="wbtn">Plot Selected WS</button>
-    </div>
-    <hr>
-    <div>Step 4: <button class="button button2" onclick="manualPrint()">Print</button><button class="button button1" onclick="drawboxred()">draw view box</button><button class="button button2" onclick="resetview()">reset view</button><button class="button button1" onclick="manualPrint()">Print</button>
-    </div>
-    <div>Press keyboard '+' or '-' for finer zoom control. Reload html to clear the map.</div>
-    <hr>
+    <input type="text" id="inputAll" size="50" placeholder="lat lon R/W S1 S2 S3">
+    <button onclick="plotFromTextbox()">Plot</button>
+    <button onclick="saveMapImage()">Save map as image</button>
+    <pre>
+[lat] [lon] [R/W] [StationToken] [StationToken] ...
+where [StationToken] is 
+- Known station ID: e.g. "S06", or
+- Manual station "Name@lat,lon": e.g. "S999@1.345,103.812"
+</pre>
     <div id='mapdiv' style='height:500px;width:750px'></div>
   </body>
   <script>
-    function plotmypoint() {
-      var marker = L.marker([document.getElementById("mylat").value, document.getElementById("mylong").value], {
-        icon: greenIcon
-      }).bindTooltip(document.getElementById("mylat").value.toString().concat('°N, ', document.getElementById("mylong").value.toString(), '°E'), {
-        permanent: true,
-        direction: 'right'
-      }).addTo(map);
-    }
     var stations = {
       S01: [1.2666, 103.816667],
       S02: [1.3, 103.88333],
@@ -210,32 +167,7 @@
       S309: [1.341769, 103.833957],
       S187: [1.322506, 103.80139]
     };
-    var wstations = {
-      S06: [1.3524, 103.9007],
-      S100: [1.4172, 103.74855],
-      S104: [1.443867, 103.78538],
-      S106: [1.4168, 103.9673],
-      S107: [1.3135, 103.9625],
-      S108: [1.2799, 103.8703],
-      S109: [1.3764, 103.8492],
-      S111: [1.31055, 103.8365],
-      S115: [1.293767, 103.618428],
-      S116: [1.281, 103.754],
-      S117: [1.253846, 103.6740437],
-      S187: [1.322506, 103.80139],
-      S121: [1.37288, 103.722444],
-      S122: [1.417313, 103.8249],
-      S23: [1.3858, 103.7114],
-      S24: [1.3678, 103.9826],
-      S43: [1.3399, 103.8878],
-      S44: [1.3454, 103.6834],
-      S50: [1.3337, 103.7768],
-      S60: [1.25, 103.8279],
-      S306: [1.350850, 103.785966],
-      S307: [1.410763, 104.041568],
-      S308: [1.401585, 103.808133],
-      S309: [1.341769, 103.833957]
-    };
+
     var center = L.bounds([1.49, 104.10], [1.14, 103.6]).getCenter();
     var map = L.map('mapdiv', {
       center: [center.x, center.y],
@@ -254,13 +186,6 @@
     });
     //map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]);
     basemap.addTo(map);
-
-    var myprintPlugin = L.easyPrint({
-      tileLayer: basemap,
-      exportOnly: true,
-      hideControlContainer: false,
-      hidden: true
-    }).addTo(map);
 
     var redIcon = new L.Icon({
       iconUrl: 'marker-icon-2x-red.png',
@@ -286,136 +211,105 @@
       popupAnchor: [1, -34],
       shadowSize: [41, 41]
     });
-    var cbdiv = document.getElementById("cbdiv");
-    for (const station in stations) {
-      // creating checkbox element
-      var checkbox = document.createElement('input');
-      // Assigning the attributes 
-      // to created checkbox 
-      checkbox.type = "checkbox";
-      checkbox.name = "station";
-      checkbox.value = station;
-      checkbox.id = "id";
-      // creating label for checkbox 
-      var label = document.createElement('label');
-      // assigning attributes for  
-      // the created label tag  
-      label.htmlFor = "id";
-      // appending the created text to  
-      // the created label tag  
-      label.appendChild(document.createTextNode(station));
-      // appending the checkbox 
-      // and label to div 
-      cbdiv.appendChild(checkbox);
-      cbdiv.appendChild(label);
-    }
-    var wcbdiv = document.getElementById("wcbdiv");
-    for (const station in wstations) {
-      // creating checkbox element
-      var checkbox = document.createElement('input');
-      // Assigning the attributes 
-      // to created checkbox 
-      checkbox.type = "checkbox";
-      checkbox.name = "wstation";
-      checkbox.value = station;
-      checkbox.id = "id";
-      // creating label for checkbox 
-      var label = document.createElement('label');
-      // assigning attributes for  
-      // the created label tag  
-      label.htmlFor = "id";
-      // appending the created text to  
-      // the created label tag  
-      label.appendChild(document.createTextNode(station));
-      // appending the checkbox 
-      // and label to div 
-      wcbdiv.appendChild(checkbox);
-      wcbdiv.appendChild(label);
-    }
 
-    function getSelectedCheckboxValues(name, inputId) {
-      const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
-      let values = [];
-      checkboxes.forEach((checkbox) => {
-        values.push(checkbox.value);
+    function plotFromTextbox() {
+      const input = document.getElementById("inputAll").value.trim();
+      const parts = input.split(/\s+/);
+      if (parts.length < 4) {
+        alert("Input format: lat lon R/W S1 S2 ...");
+        return;
+      }
+      // 1. Parse basic values
+      const lat = parseFloat(parts[0]);
+      const lon = parseFloat(parts[1]);
+      const zone = parts[2].toUpperCase();   // R or W
+      const stationIds = parts.slice(3);
+      // 2. Plot green marker (lat lon)
+      L.marker([lat, lon], { icon: greenIcon }).bindTooltip(`${lat}°N, ${lon}°E`, {
+        permanent: true,
+        direction: 'right'
+        })
+        .addTo(map);
+      let points = [[lat, lon]];
+      // 3. Decide which stations + icon to use
+      let stationSource, icon;
+      if (zone === "R") {
+        stationSource = stations;
+        icon = blueIcon;
+      } else if (zone === "W") {
+        stationSource = stations;
+        icon = redIcon;
+      } else {
+        alert("Third value must be R or W");
+        return;
+      }
+      // 4. Plot stations
+      stationIds.forEach(token => {
+        let coord, label;
+        // Case 1: Named manual station "Name@lat,lon"
+        if (token.includes("@")) {
+          const [name, coordPart] = token.split("@");
+          const parts = coordPart.split(",");
+          if (parts.length !== 2) {
+            console.warn("Invalid named station:", token);
+            return;
+          }
+          const lat = parseFloat(parts[0]);
+          const lon = parseFloat(parts[1]);
+          if (isNaN(lat) || isNaN(lon)) {
+            console.warn("Invalid coordinates:", token);
+            return;
+          }
+          coord = [lat, lon];
+          label = name;
+        }
+        // Case 2: Known station ID
+        else if (stationSource[token]) {
+          coord = stationSource[token];
+          label = token;
+        }
+        // Case 3: Invalid token
+        else {
+          console.warn(
+            "Invalid station token (must be ID or Name@lat,lon):",
+            token
+          );
+          return;
+        }
+        // Plot marker
+        L.marker(coord, { icon })
+          .bindTooltip(label, {
+            permanent: true,
+            direction: 'right'
+          })
+          .addTo(map);
+        points.push(coord);
       });
-      let inputVal = document.getElementById(inputId).value;
-      const myArr = inputVal.trim().split(" ").slice(3);
-      return values.concat(myArr);
-    }
-    const btn = document.querySelector('#btn');
-    btn.addEventListener('click', (event) => {
-      var values = getSelectedCheckboxValues('station', 'inputRSId');
-      let points = [];
-      var i;
-      for (i = 0; i < values.length; i++) {
-        var marker = L.marker(stations[values[i]], {
-          icon: blueIcon
-        }).bindTooltip(values[i], {
-          permanent: true,
-          direction: 'right'
-        }).addTo(map);
-        points.push(stations[values[i]]);
-      };
-      var marker = L.marker([parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[1])], {
-        icon: greenIcon
-      }).bindTooltip(document.getElementById('inputRSId').value.trim().split(" ")[0].concat('°N, ', document.getElementById('inputRSId').value.trim().split(" ")[1], '°E'), {
-        permanent: true,
-        direction: 'right'
-      }).addTo(map);
-      points.push([parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputRSId').value.trim().split(" ")[1])]);
-      //points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
-      map.fitBounds(L.latLngBounds(points).pad(0.28));
-    });
-    const wbtn = document.querySelector('#wbtn');
-    wbtn.addEventListener('click', (event) => {
-      var values = getSelectedCheckboxValues('wstation', 'inputWSId');
-      let points = [];
-      var i;
-      for (i = 0; i < values.length; i++) {
-        var marker = L.marker(stations[values[i]], {
-          icon: redIcon
-        }).bindTooltip(values[i], {
-          permanent: true,
-          direction: 'right'
-        }).addTo(map);
-        points.push(stations[values[i]]);
-      };
-      var marker = L.marker([parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[1])], {
-        icon: greenIcon
-      }).bindTooltip(document.getElementById('inputWSId').value.trim().split(" ")[0].concat('°N, ', document.getElementById('inputWSId').value.trim().split(" ")[1], '°E'), {
-        permanent: true,
-        direction: 'right'
-      }).addTo(map);
-      points.push([parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[0]), parseFloat(document.getElementById('inputWSId').value.trim().split(" ")[1])]);
-      //points.push([document.getElementById("mylat").value, document.getElementById("mylong").value]);
-      map.fitBounds(L.latLngBounds(points).pad(0.28));
-    });
-
-    function drawboxred() {
-      L.rectangle(map.getBounds(), {
-        color: "black",
-        weight: 2,
-        fillOpacity: 0
-      }).addTo(map);
+      // 5. Fit map to all points
+      map.fitBounds(L.latLngBounds(points).pad(0.3));
     }
 
-    function drawboxblue() {
-      L.rectangle(map.getBounds(), {
-        color: "black",
-        weight: 2,
-        fillOpacity: 0
-      }).addTo(map);
-    }
+function saveMapImage() {
+  const mapDiv = document.getElementById("mapdiv");
 
-    function resetview() {
-      map.setView([center.x, center.y], 11);
-      map.getPane('tooltipPane').remove();
-      map.createPane('tooltipPane');
-    }
+  html2canvas(mapDiv, {
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  }).then(canvas => {
 
-    function manualPrint() {
-      myprintPlugin.printMap('CurrentSize', 'MyFileName');
-    }
+    // Convert canvas to image
+    const image = canvas.toDataURL("image/png");
+
+    // Create download link
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "map.png";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+}
+
   </script>
 </html>
